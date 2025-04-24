@@ -31,7 +31,7 @@ export async function cadastrarFilial(filial) {
     let resp = await request.query(comando);
 
     return resp.recordset[0].insertId;
-}
+};
 
 export async function deletarFilial(id) {
     let request = await con.request();
@@ -46,7 +46,7 @@ export async function deletarFilial(id) {
     let resp = await request.query(comando);
 
     return resp.rowsAffected[0];
-}
+};
 
 export async function editarFilial(filial, id) {
     let request = await con.request();
@@ -91,7 +91,7 @@ export async function editarFilial(filial, id) {
 
     let resp = await request.query(comando);
     return resp.rowsAffected[0];
-}
+};
 
 export async function listarFilial(id) {
     let request = await con.request();
@@ -106,4 +106,4 @@ export async function listarFilial(id) {
     let resp = await request.query(comando);
 
     return resp.recordset;
-}
+};

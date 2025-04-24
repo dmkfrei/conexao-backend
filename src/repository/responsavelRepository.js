@@ -20,4 +20,4 @@ export async function cadastrarResponsavel(responsavel) {
 
     let resp = await request.query(comando);
     return resp.recordset[0].insertId;
-}
+};

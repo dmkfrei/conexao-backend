@@ -9,5 +9,6 @@ const PORT = process.env.PORT;
 server.use(express.json());
 server.use(cors());
 Rotas(server);
+server.use('/imgs', express.static('public/img'));
 
 server.listen(PORT, () => console.log(`API! ${PORT}`));

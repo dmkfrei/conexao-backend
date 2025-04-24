@@ -2,8 +2,11 @@ import { Router } from "express";
 import { cadastrar, atualizarSenha, login, buscarSenhaAntiga } from "../repository/loginRepository.js";
 import ValidarLogin from "../validation/loginValidation.js";
 import { gerarToken } from "../utils/jwt.js";
+import storage from "../repository/multer.js";
+import multer from "multer";
 
 const endpoints = Router();
+const m = multer({ storage });
 
 endpoints.post("/login", async (req, resp) => {
     try {
@@ -20,7 +23,7 @@ endpoints.post("/login", async (req, resp) => {
     } catch (err) {
         resp.status(400).send({
             erro: err.message
-        })
+        });
     }
 });
 
@@ -43,7 +46,7 @@ endpoints.put("/login/senha/:id", async (req, resp) => {
     } catch (err) {
         resp.status(400).send({
             erro: err.message
-        })
+        });
     }
 });
 
@@ -57,9 +60,9 @@ endpoints.post("/logar", async (req, resp) => {
         if (logar == null) {
             return resp.status(404).send({
                 erro: 'Usuário ou senha incorretos.'
-            })
+            });
         }
-        
+
         resp.send({
             usuário: logar.ds_usuario,
             senha: logar.ds_senha
@@ -69,8 +72,8 @@ endpoints.post("/logar", async (req, resp) => {
     } catch (err) {
         resp.status(400).send({
             erro: err.message
-        })
+        });
     }
-})
+});
 
 export default endpoints;

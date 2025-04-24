@@ -4,7 +4,7 @@ import sql from 'mssql';
 export async function cadastrar(login) {
     let request = await con.request();
 
-    let codigo = Math.floor(Math.random() * 90000) + 10000;
+    let codigo = Math.floor(Math.random() * 10000);
     let ativo = true;
 
     request.input('usuario', sql.VarChar, login.ds_usuario);
@@ -21,7 +21,7 @@ export async function cadastrar(login) {
     
     let resp = await request.query(comando);
     return resp.recordset[0].insertId;
-}
+};
 
 export async function buscarSenhaAntiga(id) {
     let request = await con.request();
@@ -34,7 +34,7 @@ export async function buscarSenhaAntiga(id) {
     let resp = await request.query(comando);
     
     return resp.recordset[0]?.ds_senha;
-}
+};
 
 export async function atualizarSenha(senha, id) {
     let request = await con.request();
@@ -50,7 +50,7 @@ export async function atualizarSenha(senha, id) {
 
     let resp = await request.query(comando);
     return resp.rowsAffected[0];
-}
+};
 
 
 export async function login(login) {
@@ -81,4 +81,4 @@ export async function login(login) {
     
     let atualizarLogin = await request.query(script);
     return resp.recordset[0];
-}
+};

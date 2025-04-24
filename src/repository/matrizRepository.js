@@ -30,7 +30,7 @@ export async function cadastrarMatriz(matriz) {
 
     let resp = await request.query(comando);
     return resp.recordset[0].insertId;
-}
+};
 
 export async function editarMatriz(matriz, id) {
     let request = await con.request();
@@ -75,7 +75,7 @@ export async function editarMatriz(matriz, id) {
 
     let resp = await request.query(comando);
     return resp.rowsAffected[0];
-}
+};
 
 export async function alterarSituacao(matriz, id) {
     let request = await con.request();
@@ -95,4 +95,4 @@ export async function alterarSituacao(matriz, id) {
 
 export async function baixarAcordo(params) {
     
-}
+};
