@@ -1,0 +1,98 @@
+import con from "./connection.js";
+import sql from "mssql";
+
+export async function cadastrarMatriz(matriz) {
+    let request = await con.request();
+
+    request.input('id', sql.Int, matriz.id_login)
+    request.input('nome', sql.VarChar, matriz.ds_razao_social);
+    request.input('cnpj', sql.VarChar, matriz.ds_cnpj);
+    request.input('inscricao', sql.VarChar, matriz.ds_inscricao);
+    request.input('endereco', sql.VarChar, matriz.ds_endereco);
+    request.input('numero', sql.VarChar, matriz.ds_numero);
+    request.input('bairro', sql.VarChar, matriz.ds_bairro);
+    request.input('cep', sql.VarChar, matriz.ds_cep);
+    request.input('cidade', sql.VarChar, matriz.ds_cidade);
+    request.input('estado', sql.VarChar, matriz.ds_estado);
+    request.input('telefone', sql.VarChar, matriz.ds_telefone);
+    request.input('celular', sql.VarChar, matriz.ds_celular);
+    request.input('acordo', sql.VarChar, matriz.ds_acordo);
+    request.input('foto', sql.VarChar, matriz.ds_foto);
+    request.input('ativo', sql.Bit, matriz.bt_ativo);
+    request.input('situacao', sql.VarChar, matriz.ds_situacao);
+
+    const comando = 
+        `insert into tb_empresa (id_login, ds_razao_social, ds_cnpj, ds_inscricao, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular, ds_acordo, ds_foto, bt_ativo, ds_situacao)
+        values (@id, @nome, @cnpj, @inscricao, @endereco, @numero, @bairro, @cep, @cidade, @estado, @telefone, @celular, @acordo, @foto, @ativo, @situacao);
+        
+        SELECT SCOPE_IDENTITY() AS insertId;
+    `;
+
+    let resp = await request.query(comando);
+    return resp.recordset[0].insertId;
+}
+
+export async function editarMatriz(matriz, id) {
+    let request = await con.request();
+
+    request.input('id', sql.Int, id);
+    request.input('nome', sql.VarChar, matriz.ds_razao_social);
+    request.input('cnpj', sql.VarChar, matriz.ds_cnpj);
+    request.input('inscricao', sql.VarChar, matriz.ds_inscricao);
+    request.input('endereco', sql.VarChar, matriz.ds_endereco);
+    request.input('numero', sql.VarChar, matriz.ds_numero);
+    request.input('bairro', sql.VarChar, matriz.ds_bairro);
+    request.input('cep', sql.VarChar, matriz.ds_cep);
+    request.input('cidade', sql.VarChar, matriz.ds_cidade);
+    request.input('estado', sql.VarChar, matriz.ds_estado);
+    request.input('telefone', sql.VarChar, matriz.ds_telefone);
+    request.input('celular', sql.VarChar, matriz.ds_celular);
+    request.input('acordo', sql.VarChar, matriz.ds_acordo);
+    request.input('foto', sql.VarChar, matriz.ds_foto);
+    request.input('ativo', sql.Bit, matriz.bt_ativo);
+    request.input('situacao', sql.VarChar, matriz.ds_situacao);
+
+    const comando = `
+        UPDATE tb_empresa
+        SET
+            ds_razao_social = @nome,
+            ds_cnpj = @cnpj,
+            ds_inscricao = @inscricao,
+            ds_endereco = @endereco,
+            ds_numero = @numero,
+            ds_bairro = @bairro,
+            ds_cep = @cep,
+            ds_cidade = @cidade,
+            ds_estado = @estado,
+            ds_telefone = @telefone,
+            ds_celular = @celular,
+            ds_acordo = @acordo,
+            ds_foto = @foto,
+            bt_ativo = @ativo,
+            ds_situacao = @situacao
+        WHERE id_empresa = @id;
+    `;    
+
+    let resp = await request.query(comando);
+    return resp.rowsAffected[0];
+}
+
+export async function alterarSituacao(matriz, id) {
+    let request = await con.request();
+
+    request.input('situacao', sql.VarChar, matriz.ds_situacao);
+    request.input('id', sql.Int, id);
+
+    const comando = `
+       update tb_empresa
+       set ds_situacao = @situacao
+       where id_empresa = @id; 
+    `;
+
+    let resp = await request.query(comando);
+    return resp.rowsAffected[0];
+}
+
+export async function baixarAcordo(params) {
+    
+}
