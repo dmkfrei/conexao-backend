@@ -20,6 +20,6 @@ endpoints.post("/resp", async (req, resp) => {
             erro: err.message
         });
     }
-})
+});
 
 export default endpoints;

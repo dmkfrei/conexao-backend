@@ -10,8 +10,4 @@ export default function validarFilial(req) {
     if (!req.body.ds_estado) throw new Error("O estado é obrigatório.");
     if (!req.body.ds_telefone) throw new Error("O telefone é obrigatório.");
     if (!req.body.ds_celular) throw new Error("O celular é obrigatório.");
-    if (!req.body.ds_acordo) throw new Error("O acordo é obrigatório.");
-    if (!req.body.ds_foto) throw new Error("A foto é obrigatória.");
-    if (req.body.bt_ativo == null) throw new Error("O status de ativo é obrigatório.");
-    if (!req.body.ds_situacao) throw new Error("A situação é obrigatória.");
 }

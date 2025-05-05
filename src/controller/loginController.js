@@ -35,8 +35,9 @@ endpoints.put("/login/senha/:id", async (req, resp) => {
         let senhaAntiga = await buscarSenhaAntiga(id);
 
         if (senhaAntiga != dados.ds_senha) {
-            return resp.status(404).send({ erro: 'A senha atual está incorreta.' })
+            return resp.status(404).send({ erro: 'A senha antiga está incorreta.' })
         }
+        
         let linha = await atualizarSenha(dados, id);
 
         if (linha > 0) {

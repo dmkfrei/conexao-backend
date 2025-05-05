@@ -4,7 +4,10 @@ import sql from "mssql";
 export async function cadastrarMatriz(matriz) {
     let request = await con.request();
 
-    request.input('id', sql.Int, matriz.id_login)
+    let ativo = true;
+    let situacao = 'Falta assinar';
+
+    request.input('id', sql.Int, matriz.id_login);
     request.input('nome', sql.VarChar, matriz.ds_razao_social);
     request.input('cnpj', sql.VarChar, matriz.ds_cnpj);
     request.input('inscricao', sql.VarChar, matriz.ds_inscricao);
@@ -16,14 +19,12 @@ export async function cadastrarMatriz(matriz) {
     request.input('estado', sql.VarChar, matriz.ds_estado);
     request.input('telefone', sql.VarChar, matriz.ds_telefone);
     request.input('celular', sql.VarChar, matriz.ds_celular);
-    request.input('acordo', sql.VarChar, matriz.ds_acordo);
-    request.input('foto', sql.VarChar, matriz.ds_foto);
-    request.input('ativo', sql.Bit, matriz.bt_ativo);
-    request.input('situacao', sql.VarChar, matriz.ds_situacao);
+    request.input('ativo', sql.Bit, ativo);
+    request.input('situacao', sql.VarChar, situacao);
 
-    const comando = 
-        `insert into tb_empresa (id_login, ds_razao_social, ds_cnpj, ds_inscricao, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular, ds_acordo, ds_foto, bt_ativo, ds_situacao)
-        values (@id, @nome, @cnpj, @inscricao, @endereco, @numero, @bairro, @cep, @cidade, @estado, @telefone, @celular, @acordo, @foto, @ativo, @situacao);
+    const comando =
+        `insert into tb_empresa (id_login, ds_razao_social, ds_cnpj, ds_inscricao, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular, bt_ativo, ds_situacao)
+        values (@id, @nome, @cnpj, @inscricao, @endereco, @numero, @bairro, @cep, @cidade, @estado, @telefone, @celular, @ativo, @situacao);
         
         SELECT SCOPE_IDENTITY() AS insertId;
     `;
@@ -71,7 +72,7 @@ export async function editarMatriz(matriz, id) {
             bt_ativo = @ativo,
             ds_situacao = @situacao
         WHERE id_empresa = @id;
-    `;    
+    `;
 
     let resp = await request.query(comando);
     return resp.rowsAffected[0];
@@ -91,8 +92,42 @@ export async function alterarSituacao(matriz, id) {
 
     let resp = await request.query(comando);
     return resp.rowsAffected[0];
-}
+};
 
-export async function baixarAcordo(params) {
-    
+export async function addFotoMatriz(foto, id) {
+    let request = await con.request();
+
+    request.input('foto', sql.VarChar, foto);
+    request.input('id', sql.Int, id);
+
+    const comando = `
+        update tb_empresa
+        set ds_foto = @foto
+        where id_empresa = @id;
+    `;
+
+    let resp = await request.query(comando);
+
+    return resp[0];
+};
+
+export async function enviarAcordo(acordo, id) {
+    let request = await con.request();
+
+    let situacao = 'Assinado';
+
+    request.input('id', sql.Int, id);
+    request.input('acordo', sql.VarChar, acordo);
+    request.input('situacao', sql.VarChar, situacao);
+
+    const comando = `
+        update tb_empresa
+        set ds_acordo = @acordo,
+        ds_situacao = @situacao
+        where id_empresa = @id;
+    `;
+
+    let resp = await request.query(comando);
+
+    return resp[0];
 };

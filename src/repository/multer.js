@@ -9,6 +9,6 @@ const storage = multer.diskStorage({
         const r = `${Date.now()}.${type}`;
         cb(null, r);
     }
-})
+});
 
 export default storage;

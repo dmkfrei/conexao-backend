@@ -10,6 +10,4 @@ export default function validarMatriz(req) {
     if (!req.body.ds_estado) throw new Error("O estado é obrigatório.");
     if (!req.body.ds_telefone) throw new Error("O telefone é obrigatório.");
     if (!req.body.ds_celular) throw new Error("O celular é obrigatório.");
-    if (!req.body.ds_acordo) throw new Error("O acordo é obrigatório.");
-    if (!req.body.ds_situacao) throw new Error("A situação é obrigatória.");
 }

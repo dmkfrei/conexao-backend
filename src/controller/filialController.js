@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { cadastrarFilial, deletarFilial, editarFilial, listarFilial } from "../repository/filialRepository.js";
+import { addFotofilial, cadastrarFilial, deletarFilial, editarFilial, listarFilial } from "../repository/filialRepository.js";
 import validarFilial from "../validation/filialValidation.js";
 import { autenticar } from "../utils/jwt.js";
+import storage from "../repository/multer.js";
+import multer from "multer";
 
 const endpoints = Router();
+const m = multer({ storage });
 
 endpoints.post("/filial", async (req, resp) => {
     try {
@@ -19,7 +22,7 @@ endpoints.post("/filial", async (req, resp) => {
     } catch (err) {
         resp.status(400).send({
             erro: err.message
-        })
+        });
     }
 });
 
@@ -37,7 +40,7 @@ endpoints.delete("/filial/:id", async (req, resp) => {
     } catch (err) {
         resp.status(400).send({
             erro: err.message
-        })
+        });
     }
 });
 
@@ -58,7 +61,7 @@ endpoints.put("/filial/:id", async (req, resp) => {
     } catch (err) {
         resp.status(400).send({
             erro: err.message
-        })
+        });
     }
 });
 
@@ -72,8 +75,23 @@ endpoints.get("/filial/:id", async (req, resp) => {
     } catch (err) {
         resp.status(400).send({
             erro: err.message
-        })
+        });
     }
 });
 
+endpoints.put('/addFotoFilial/:id', m.single('img'), async (req, resp) => {
+    try {
+        let id = req.params.id;
+        let filename = req.file.filename;
+
+        let x = await addFotofilial(filename, id);
+
+        resp.send(x);
+        
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        });
+    }
+})
 export default endpoints;

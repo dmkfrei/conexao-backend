@@ -4,6 +4,9 @@ import sql from 'mssql';
 export async function cadastrarFilial(filial) {
     let request = await con.request();
 
+    let ativo = true;
+    let situacao = 'Falta assinar';
+
     request.input('id', sql.Int, filial.id_empresa);
     request.input('nome', sql.VarChar, filial.ds_razao_social);
     request.input('cnpj', sql.VarChar, filial.ds_cnpj);
@@ -18,8 +21,8 @@ export async function cadastrarFilial(filial) {
     request.input('celular', sql.VarChar, filial.ds_celular);
     request.input('acordo', sql.VarChar, filial.ds_acordo);
     request.input('foto', sql.VarChar, filial.ds_foto);
-    request.input('ativo', sql.Bit, filial.bt_ativo);
-    request.input('situacao', sql.VarChar, filial.ds_situacao);
+    request.input('ativo', sql.Bit, ativo);
+    request.input('situacao', sql.VarChar, situacao);
 
     const comando = `
         insert into tb_filial (id_empresa, ds_razao_social, ds_cnpj, ds_inscricao, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular, ds_acordo, ds_foto, bt_ativo, ds_situacao)
@@ -64,9 +67,6 @@ export async function editarFilial(filial, id) {
     request.input('telefone', sql.VarChar, filial.ds_telefone);
     request.input('celular', sql.VarChar, filial.ds_celular);
     request.input('acordo', sql.VarChar, filial.ds_acordo);
-    request.input('foto', sql.VarChar, filial.ds_foto);
-    request.input('ativo', sql.Bit, filial.bt_ativo);
-    request.input('situacao', sql.VarChar, filial.ds_situacao);
 
     const comando = `
         UPDATE tb_filial
@@ -82,10 +82,7 @@ export async function editarFilial(filial, id) {
             ds_estado = @estado,
             ds_telefone = @telefone,
             ds_celular = @celular,
-            ds_acordo = @acordo,
-            ds_foto = @foto,
-            bt_ativo = @ativo,
-            ds_situacao = @situacao
+            ds_acordo = @acordo 
         WHERE id_filial = @id;
     `;    
 
@@ -99,11 +96,28 @@ export async function listarFilial(id) {
     request.input('id', sql.Int, id);
 
     const comando = `
-        select id_filial, ds_razao_social, ds_cnpj, ds_inscricao, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular, ds_acordo, ds_foto, bt_ativo, ds_situacao from tb_filial
+        select ds_razao_social, ds_cnpj, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular from tb_filial
         where id_empresa = @id;
     `;
 
     let resp = await request.query(comando);
 
     return resp.recordset;
+};
+
+export async function addFotofilial(foto, id) {
+    let request = await con.request();
+
+    request.input('foto', sql.VarChar, foto);
+    request.input('id', sql.Int, id);
+
+    const comando = `
+        update tb_filial
+        set ds_foto = @foto
+        where id_filial = @id;
+    `;
+
+    let resp = await request.query(comando);
+
+    return resp[0];
 };
