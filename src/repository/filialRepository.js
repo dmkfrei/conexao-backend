@@ -19,14 +19,12 @@ export async function cadastrarFilial(filial) {
     request.input('estado', sql.VarChar, filial.ds_estado);
     request.input('telefone', sql.VarChar, filial.ds_telefone);
     request.input('celular', sql.VarChar, filial.ds_celular);
-    request.input('acordo', sql.VarChar, filial.ds_acordo);
-    request.input('foto', sql.VarChar, filial.ds_foto);
     request.input('ativo', sql.Bit, ativo);
     request.input('situacao', sql.VarChar, situacao);
 
     const comando = `
-        insert into tb_filial (id_empresa, ds_razao_social, ds_cnpj, ds_inscricao, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular, ds_acordo, ds_foto, bt_ativo, ds_situacao)
-        values (@id, @nome, @cnpj, @inscricao, @endereco, @numero, @bairro, @cep, @cidade, @estado, @telefone, @celular, @acordo, @foto, @ativo, @situacao);
+        insert into tb_filial (id_empresa, ds_razao_social, ds_cnpj, ds_inscricao, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular, bt_ativo, ds_situacao)
+        values (@id, @nome, @cnpj, @inscricao, @endereco, @numero, @bairro, @cep, @cidade, @estado, @telefone, @celular, @ativo, @situacao);
         
         SELECT SCOPE_IDENTITY() AS insertId;
     `;
@@ -66,7 +64,6 @@ export async function editarFilial(filial, id) {
     request.input('estado', sql.VarChar, filial.ds_estado);
     request.input('telefone', sql.VarChar, filial.ds_telefone);
     request.input('celular', sql.VarChar, filial.ds_celular);
-    request.input('acordo', sql.VarChar, filial.ds_acordo);
 
     const comando = `
         UPDATE tb_filial
@@ -81,8 +78,7 @@ export async function editarFilial(filial, id) {
             ds_cidade = @cidade,
             ds_estado = @estado,
             ds_telefone = @telefone,
-            ds_celular = @celular,
-            ds_acordo = @acordo 
+            ds_celular = @celular
         WHERE id_filial = @id;
     `;    
 

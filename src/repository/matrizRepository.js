@@ -48,10 +48,6 @@ export async function editarMatriz(matriz, id) {
     request.input('estado', sql.VarChar, matriz.ds_estado);
     request.input('telefone', sql.VarChar, matriz.ds_telefone);
     request.input('celular', sql.VarChar, matriz.ds_celular);
-    request.input('acordo', sql.VarChar, matriz.ds_acordo);
-    request.input('foto', sql.VarChar, matriz.ds_foto);
-    request.input('ativo', sql.Bit, matriz.bt_ativo);
-    request.input('situacao', sql.VarChar, matriz.ds_situacao);
 
     const comando = `
         UPDATE tb_empresa
@@ -66,11 +62,7 @@ export async function editarMatriz(matriz, id) {
             ds_cidade = @cidade,
             ds_estado = @estado,
             ds_telefone = @telefone,
-            ds_celular = @celular,
-            ds_acordo = @acordo,
-            ds_foto = @foto,
-            bt_ativo = @ativo,
-            ds_situacao = @situacao
+            ds_celular = @celular 
         WHERE id_empresa = @id;
     `;
 
@@ -117,7 +109,7 @@ export async function enviarAcordo(acordo, id) {
     let situacao = 'Assinado';
 
     request.input('id', sql.Int, id);
-    request.input('acordo', sql.VarChar, acordo);
+    request.input('acordo', sql.VarChar, acordo);+
     request.input('situacao', sql.VarChar, situacao);
 
     const comando = `
