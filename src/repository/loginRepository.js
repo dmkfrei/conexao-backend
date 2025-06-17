@@ -68,6 +68,8 @@ export async function login(login) {
 
     let resp = await request.query(comando);
 
+    if(resp.recordset[0] == undefined) return null;
+
     let data = new Date(Date.now());
 
     request.input('data', sql.DateTime, data);

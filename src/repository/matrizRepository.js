@@ -109,8 +109,8 @@ export async function enviarAcordo(acordo, id) {
     let situacao = 'Assinado';
 
     request.input('id', sql.Int, id);
-    request.input('acordo', sql.VarChar, acordo);+
-    request.input('situacao', sql.VarChar, situacao);
+    request.input('acordo', sql.VarChar, acordo); +
+        request.input('situacao', sql.VarChar, situacao);
 
     const comando = `
         update tb_empresa
@@ -122,4 +122,18 @@ export async function enviarAcordo(acordo, id) {
     let resp = await request.query(comando);
 
     return resp[0];
+};
+
+export async function BuscarEmpresaPeloLogin(id_login) {
+    let request = await con.request();
+    request.input('id_login', sql.Int, id_login);
+
+    const comando = `
+        SELECT id_empresa 
+        FROM tb_empresa
+        WHERE id_login = @id_login;
+    `;
+
+    let resp = await request.query(comando);
+    return resp.recordset[0];
 };

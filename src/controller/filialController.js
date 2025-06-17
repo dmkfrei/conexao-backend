@@ -8,7 +8,7 @@ import multer from "multer";
 const endpoints = Router();
 const m = multer({ storage });
 
-endpoints.post("/filial", async (req, resp) => {
+endpoints.post("/filial", autenticar, async (req, resp) => {
     try {
         validarFilial(req);
 
@@ -26,7 +26,7 @@ endpoints.post("/filial", async (req, resp) => {
     }
 });
 
-endpoints.delete("/filial/:id", async (req, resp) => {
+endpoints.delete("/filial/:id", autenticar, async (req, resp) => {
     try {
         let id = req.params.id;
         let linha = await deletarFilial(id);
@@ -44,7 +44,7 @@ endpoints.delete("/filial/:id", async (req, resp) => {
     }
 });
 
-endpoints.put("/filial/:id", async (req, resp) => {
+endpoints.put("/filial/:id", autenticar, async (req, resp) => {
     try {
         validarFilial(req);
         
@@ -65,7 +65,7 @@ endpoints.put("/filial/:id", async (req, resp) => {
     }
 });
 
-endpoints.get("/filial/:id", async (req, resp) => {
+endpoints.get("/filial/:id", autenticar, async (req, resp) => {
     try {
         let id = req.params.id;
         let infos = await listarFilial(id);
@@ -79,7 +79,7 @@ endpoints.get("/filial/:id", async (req, resp) => {
     }
 });
 
-endpoints.put('/addFotoFilial/:id', m.single('img'), async (req, resp) => {
+endpoints.put('/addFotoFilial/:id', autenticar, m.single('img'), async (req, resp) => {
     try {
         let id = req.params.id;
         let filename = req.file.filename;
@@ -93,5 +93,6 @@ endpoints.put('/addFotoFilial/:id', m.single('img'), async (req, resp) => {
             erro: err.message
         });
     }
-})
+});
+
 export default endpoints;

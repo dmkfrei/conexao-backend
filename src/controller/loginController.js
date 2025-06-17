@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { cadastrar, atualizarSenha, login, buscarSenhaAntiga } from "../repository/loginRepository.js";
 import ValidarLogin from "../validation/loginValidation.js";
-import { gerarToken } from "../utils/jwt.js";
+import { autenticar, gerarToken } from "../utils/jwt.js";
 import storage from "../repository/multer.js";
 import multer from "multer";
 
@@ -27,7 +27,7 @@ endpoints.post("/login", async (req, resp) => {
     }
 });
 
-endpoints.put("/login/senha/:id", async (req, resp) => {
+endpoints.put("/login/senha/:id", autenticar, async (req, resp) => {
     try {
         let id = req.params.id;
         let dados = req.body;
@@ -37,7 +37,7 @@ endpoints.put("/login/senha/:id", async (req, resp) => {
         if (senhaAntiga != dados.ds_senha) {
             return resp.status(404).send({ erro: 'A senha antiga está incorreta.' })
         }
-        
+
         let linha = await atualizarSenha(dados, id);
 
         if (linha > 0) {
@@ -58,17 +58,19 @@ endpoints.post("/logar", async (req, resp) => {
         let dados = req.body;
         let logar = await login(dados);
 
-        if (logar == null) {
+        if (logar == null || logar == undefined) {
             return resp.status(404).send({
                 erro: 'Usuário ou senha incorretos.'
             });
         }
 
         resp.send({
-            usuário: logar.ds_usuario,
-            senha: logar.ds_senha
-        })
-
+            token: gerarToken({
+                id: logar.id_login,
+                usuario: logar.ds_usuario,
+                senha: logar.ds_senha
+            })
+        });
 
     } catch (err) {
         resp.status(400).send({

@@ -1,13 +1,14 @@
 import { Router } from "express";
-import { addFotoMatriz, alterarSituacao, cadastrarMatriz, editarMatriz, enviarAcordo } from "../repository/matrizRepository.js";
+import { addFotoMatriz, alterarSituacao, BuscarEmpresaPeloLogin, cadastrarMatriz, editarMatriz, enviarAcordo } from "../repository/matrizRepository.js";
 import validarMatriz from "../validation/matrizValidation.js";
 import storage from "../repository/multer.js";
 import multer from "multer";
+import { autenticar } from "../utils/jwt.js";
 
 const endpoints = Router();
 const m = multer({ storage });
 
-endpoints.post("/matriz", async (req, resp) => {
+endpoints.post("/matriz", autenticar, async (req, resp) => {
     try {
         validarMatriz(req);
 
@@ -25,7 +26,7 @@ endpoints.post("/matriz", async (req, resp) => {
     }
 });
 
-endpoints.put("/matriz/:id", async (req, resp) => {
+endpoints.put("/matriz/:id", autenticar, async (req, resp) => {
     try {
         validarMatriz(req);
 
@@ -47,7 +48,7 @@ endpoints.put("/matriz/:id", async (req, resp) => {
     }
 });
 
-endpoints.put("/alterarSituacao/:id", async (req, resp) => {
+endpoints.put("/alterarSituacao/:id", autenticar, async (req, resp) => {
     try {
         let id = req.params.id;
         let dados = req.body;
@@ -96,7 +97,7 @@ endpoints.get('/baixarAcordo/', async (req, resp) => {
     }
 });
 
-endpoints.put('/enviarAcordo/:id', m.single('img'), async (req, resp) => {
+endpoints.put('/enviarAcordo/:id', autenticar, m.single('img'), async (req, resp) => {
     try {
         let id = req.params.id;
         let filename = req.file.filename;
@@ -111,5 +112,19 @@ endpoints.put('/enviarAcordo/:id', m.single('img'), async (req, resp) => {
         });
     }
 });
+
+endpoints.post('/buscarEmpresaPeloLogin', async (req, resp) => {
+    try {
+        let { id_login } = req.body;
+        let id_empresa = await BuscarEmpresaPeloLogin(id_login);
+
+        resp.send(id_empresa);
+
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        });
+    }
+})
 
 export default endpoints;
