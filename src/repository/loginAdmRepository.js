@@ -8,8 +8,8 @@ export async function Login (login) {
    request.input('senha', sql.VarChar, login.ds_senha);
 
    const script = `
-        select id_login, ds_usuario, ds_senha
-        from tb_login
+        select id_login_adm, ds_usuario, ds_senha
+        from tb_login_adm
         where ds_usuario = @usuario and
         ds_senha = @senha;
    `;
