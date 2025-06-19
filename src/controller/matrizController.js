@@ -13,6 +13,7 @@ endpoints.post("/matriz", autenticar, async (req, resp) => {
         validarMatriz(req);
 
         let dados = req.body;
+        dados.id_login = req.user.id;
         let id = await cadastrarMatriz(dados);
 
         resp.send({
