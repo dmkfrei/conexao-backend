@@ -118,6 +118,10 @@ endpoints.post('/buscarEmpresaPeloLogin', async (req, resp) => {
         let { id_login } = req.body;
         let id_empresa = await BuscarEmpresaPeloLogin(id_login);
 
+        if (!id_empresa) {
+            throw new Error('Cadastre a empresa primeiro');
+        }
+
         resp.send(id_empresa);
 
     } catch (err) {
@@ -125,6 +129,6 @@ endpoints.post('/buscarEmpresaPeloLogin', async (req, resp) => {
             erro: err.message
         });
     }
-})
+});
 
 export default endpoints;

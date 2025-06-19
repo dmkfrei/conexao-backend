@@ -92,7 +92,7 @@ export async function listarFilial(id) {
     request.input('id', sql.Int, id);
 
     const comando = `
-        select ds_razao_social, ds_cnpj, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular from tb_filial
+        select id_filial, ds_razao_social, ds_cnpj, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular from tb_filial
         where id_empresa = @id;
     `;
 

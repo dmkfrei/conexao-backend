@@ -67,8 +67,7 @@ endpoints.post("/logar", async (req, resp) => {
         resp.send({
             token: gerarToken({
                 id: logar.id_login,
-                usuario: logar.ds_usuario,
-                senha: logar.ds_senha
+                usuario: logar.ds_usuario
             })
         });
 

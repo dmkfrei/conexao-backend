@@ -32,7 +32,7 @@ endpoints.delete("/filial/:id", autenticar, async (req, resp) => {
         let linha = await deletarFilial(id);
 
         if (linha == 0) {
-            return resp.status(400).send({ erro: "Nenhuma linha foi encontrada." });
+            return resp.status(400).send({ erro: "Nenhuma filial foi encontrada." });
         }
 
         resp.send();
