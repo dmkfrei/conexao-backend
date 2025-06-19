@@ -22,7 +22,7 @@ endpoints.post('/loginAdm', async (req, resp) => {
             token: gerarToken({
                 id: login.id_login,
                 usuario: login.ds_usuario,
-                senha: login.ds_senha
+                tipo: 'adm'
             })
         })
         
