@@ -5,7 +5,7 @@ export async function cadastrarFilial(filial) {
     let request = await con.request();
 
     let ativo = true;
-    let situacao = 'Falta assinar';
+    let situacao = 'Pendente';
 
     request.input('id', sql.Int, filial.id_empresa);
     request.input('nome', sql.VarChar, filial.ds_razao_social);
@@ -92,10 +92,25 @@ export async function listarFilial(id) {
     request.input('id', sql.Int, id);
 
     const comando = `
-        select id_filial, ds_razao_social, ds_cnpj, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular from tb_filial
+        select id_filial, ds_razao_social, ds_cnpj, ds_inscricao, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular from tb_filial
         where id_empresa = @id;
     `;
 
+    let resp = await request.query(comando);
+
+    return resp.recordset;
+};
+
+export async function buscarFilialPorId(id) {
+    let request = await con.request();
+
+    request.input('id', sql.Int, id);
+
+    const comando = `
+        select ds_razao_social, ds_cnpj, ds_inscricao, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular
+        from tb_filial
+        where id_filial = @id
+    `;
     let resp = await request.query(comando);
 
     return resp.recordset;

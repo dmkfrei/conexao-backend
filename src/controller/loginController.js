@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { cadastrar, atualizarSenha, login, buscarSenhaAntiga } from "../repository/loginRepository.js";
+import { cadastrar, atualizarSenha, login, buscarSenhaAntiga, buscarInfosLogin } from "../repository/loginRepository.js";
 import ValidarLogin from "../validation/loginValidation.js";
 import { autenticar, gerarToken } from "../utils/jwt.js";
 import storage from "../repository/multer.js";
@@ -72,6 +72,20 @@ endpoints.post("/logar", async (req, resp) => {
             })
         });
 
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        });
+    }
+});
+
+endpoints.get('/buscarLoginPorId', autenticar, async (req, resp) => {
+    try {
+        let id = req.user.id;
+        let infos = await buscarInfosLogin(id);
+
+        resp.send(infos);
+        
     } catch (err) {
         resp.status(400).send({
             erro: err.message

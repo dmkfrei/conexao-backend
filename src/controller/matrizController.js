@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addFotoMatriz, alterarSituacao, BuscarEmpresaPeloLogin, cadastrarMatriz, editarMatriz, enviarAcordo } from "../repository/matrizRepository.js";
+import { addFotoMatriz, alterarSituacao, buscarEmpresaPorId, buscarEmpresa, BuscarEmpresaPeloLogin, cadastrarMatriz, editarMatriz, enviarAcordo, BuscarSituacaoEmpresa } from "../repository/matrizRepository.js";
 import validarMatriz from "../validation/matrizValidation.js";
 import storage from "../repository/multer.js";
 import multer from "multer";
@@ -49,7 +49,7 @@ endpoints.put("/matriz/:id", autenticar, async (req, resp) => {
     }
 });
 
-endpoints.put("/alterarSituacao/:id", autenticar, async (req, resp) => {
+endpoints.put("/alterarSituacao/:id", async (req, resp) => {
     try {
         let id = req.params.id;
         let dados = req.body;
@@ -69,7 +69,30 @@ endpoints.put("/alterarSituacao/:id", autenticar, async (req, resp) => {
     }
 });
 
-endpoints.put('/addFotoMatriz/:id', m.single('img'), async (req, resp) => {
+endpoints.get('/buscarSituacao', autenticar, async (req, resp) => {
+    try {
+        const tipo = req.user.tipo;
+
+        if (tipo != 'cliente') {
+            return resp.send({ situacao: null });
+        }
+
+        const id_login = req.user.id;
+        const id_empresa = await BuscarEmpresaPeloLogin(id_login);
+
+        const resultado = await BuscarSituacaoEmpresa(id_empresa);
+
+        const situacao = (resultado.length > 0) ? resultado[0].ds_situacao : null;
+
+        return resp.send({ situacao });
+
+    } catch (err) {
+        resp.status(400).send({ erro: err.message });
+    }
+});
+
+
+endpoints.put('/addFotoMatriz/:id', autenticar, m.single('img'), async (req, resp) => {
     try {
         let id = req.params.id;
         let filename = req.file.filename;
@@ -85,7 +108,7 @@ endpoints.put('/addFotoMatriz/:id', m.single('img'), async (req, resp) => {
     }
 });
 
-endpoints.get('/baixarAcordo/', async (req, resp) => {
+endpoints.get('/baixarAcordo/', autenticar, async (req, resp) => {
     try {
         const caminho = `public/img/acordo.png`;
 
@@ -114,16 +137,25 @@ endpoints.put('/enviarAcordo/:id', autenticar, m.single('img'), async (req, resp
     }
 });
 
-endpoints.post('/buscarEmpresaPeloLogin', async (req, resp) => {
+endpoints.get('/buscarEmpresaPeloLogin', autenticar, async (req, resp) => {
     try {
-        let { id_login } = req.body;
+        let id_login = req.user.id;
         let id_empresa = await BuscarEmpresaPeloLogin(id_login);
 
-        if (!id_empresa) {
-            throw new Error('Cadastre a empresa primeiro');
-        }
+        resp.send({ id_empresa });
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        });
+    }
+});
 
-        resp.send(id_empresa);
+
+endpoints.get('/buscarEmpresa', autenticar, async (req, resp) => {
+    try {
+        let infos = await buscarEmpresa();
+
+        resp.send(infos);
 
     } catch (err) {
         resp.status(400).send({
@@ -131,5 +163,20 @@ endpoints.post('/buscarEmpresaPeloLogin', async (req, resp) => {
         });
     }
 });
+
+endpoints.get('/buscarEmpresaPorId/:id', async (req, resp) => {
+    try {
+        let id = req.params.id;
+        let infos = await buscarEmpresaPorId(id);
+
+        resp.send(infos);
+
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        });
+    }
+})
+
 
 export default endpoints;

@@ -1,15 +1,21 @@
 import { Router } from "express";
-import { buscarResponsavel, cadastrarResponsavel, DeletarResponsavel, editarDadosResponsavel } from "../repository/responsavelRepository.js";
+import { buscarResponsavel, buscarResponsavelPorId, cadastrarResponsavel, DeletarResponsavel, editarDadosResponsavel } from "../repository/responsavelRepository.js";
 import ValidarResponsavel from "../validation/responsavelValidation.js";
 import { autenticar } from "../utils/jwt.js";
+import { BuscarEmpresaPeloLogin } from "../repository/matrizRepository.js";
 
 const endpoints = Router();
 
 endpoints.post("/resp", autenticar, async (req, resp) => {
     try {
         ValidarResponsavel(req);
+        const tipo = req.user.tipo;
 
         let dados = req.body;
+
+        const id_login = req.user.id;
+        dados.id_empresa = await BuscarEmpresaPeloLogin(id_login);
+
         let id = await cadastrarResponsavel(dados);
 
         resp.send({
@@ -29,13 +35,7 @@ endpoints.put('/resp/:id', autenticar, async (req, resp) => {
 
         let id = req.params.id;
         let dados = req.body;
-        let editar = editarDadosResponsavel(dados, id);
-
-        if (editar == 0) {
-            return resp.status(400).send({
-                erro: 'Os dados do responsável não foram afetados.'
-            })
-        }
+        let editar = await editarDadosResponsavel(dados, id);
 
         resp.send();
 
@@ -46,19 +46,33 @@ endpoints.put('/resp/:id', autenticar, async (req, resp) => {
     }
 });
 
-endpoints.get('/buscarResp/:id', autenticar, async (req, resp) => {
+endpoints.get('/buscarResp', autenticar, async (req, resp) => {
+    try {
+        const tipo = req.user.tipo;
+        let id_empresa;
+
+        if (tipo == 'adm') {
+            id_empresa = req.query.id_empresa;
+        } else {
+            const id_login = req.user.id;
+            id_empresa = await BuscarEmpresaPeloLogin(id_login);
+        }
+
+        const infos = await buscarResponsavel(id_empresa);
+        resp.send({ infos });
+    } catch (err) {
+        resp.status(400).send({ erro: err.message });
+    }
+});
+
+endpoints.get('/resp/:id', autenticar, async (req, resp) => {
     try {
         let id = req.params.id;
-        let infos = await buscarResponsavel(id);
-        
-        resp.send({
-            infos: infos
-        })
+        const infos = await buscarResponsavelPorId(id);
 
+        resp.send({ infos: infos });
     } catch (err) {
-        resp.status(400).send({
-            erro: err.message
-        });
+        resp.status(400).send({ erro: err.message });
     }
 });
 

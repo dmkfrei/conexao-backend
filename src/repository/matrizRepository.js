@@ -5,7 +5,7 @@ export async function cadastrarMatriz(matriz) {
     let request = await con.request();
 
     let ativo = true;
-    let situacao = 'Falta assinar';
+    let situacao = 'Pendente';
 
     request.input('id', sql.Int, matriz.id_login);
     request.input('nome', sql.VarChar, matriz.ds_razao_social);
@@ -135,5 +135,57 @@ export async function BuscarEmpresaPeloLogin(id_login) {
     `;
 
     let resp = await request.query(comando);
-    return resp.recordset[0];
+
+    if (resp.recordset.length > 0) {
+        return resp.recordset[0].id_empresa; 
+    } else {
+        return null;
+    }
+}
+
+export async function buscarEmpresa() {
+    let request = await con.request();
+
+    let situacao = 'Pendente';
+    request.input('situacao', sql.VarChar, situacao);
+
+    const comando = `
+        select id_empresa, ds_razao_social, ds_endereco, ds_telefone, dt_cadastro
+        from tb_empresa
+        where ds_situacao = @situacao
+    `;
+    let resp = await request.query(comando);
+
+    return resp.recordset;
 };
+
+export async function buscarEmpresaPorId(id) {
+    let request = await con.request();
+
+    request.input('id', sql.Int, id);
+
+    const comando = `
+        select id_empresa, ds_razao_social, ds_cnpj, ds_inscricao, ds_endereco, ds_numero, ds_bairro, ds_cep, ds_cidade, ds_estado, ds_telefone, ds_celular
+        from tb_empresa
+        where id_empresa = @id
+    `;
+    let resp = await request.query(comando);
+
+    return resp.recordset;
+};
+
+export async function BuscarSituacaoEmpresa(id) {
+    let request = await con.request();
+
+    request.input('id', sql.Int, id)
+
+    const comando = `
+        select ds_situacao
+        from tb_empresa
+        where id_empresa = @id;
+    `;
+
+    let resp = await request.query(comando);
+
+    return resp.recordset;
+}

@@ -84,3 +84,18 @@ export async function login(login) {
     let atualizarLogin = await request.query(script);
     return resp.recordset[0];
 };
+
+export async function buscarInfosLogin(id) {
+    let request = await con.request();
+
+    request.input('id', sql.Int, id);
+
+    const comando = `
+        select ds_usuario, ds_senha from tb_login
+        where id_login = @id;
+    `;
+
+    let resp = await request.query(comando);
+
+    return resp.recordset;
+};

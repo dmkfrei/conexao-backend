@@ -37,11 +37,25 @@ export async function buscarResponsavel(id) {
     return resp.recordset;
 };
 
-export async function editarDadosResponsavel() {
+export async function buscarResponsavelPorId(id) {
     let request = await con.request();
 
-    request.input("id_responsavel", sql.Int, responsavel.id_responsavel);
-    request.input("id", sql.Int, responsavel.id_empresa);
+    request.input('id', sql.Int, id);
+
+    const comando = `
+        select nm_nome, ds_cargo, ds_email, ds_telefone 
+        from tb_responsavel
+        where id_responsavel = @id;
+    `;
+
+    let resp = await request.query(comando);
+    return resp.recordset;
+};
+
+export async function editarDadosResponsavel(responsavel, id) {
+    let request = await con.request();
+    
+    request.input("id", sql.Int, id);    
     request.input("nome", sql.VarChar, responsavel.nm_nome);
     request.input("cargo", sql.VarChar, responsavel.ds_cargo);
     request.input("email", sql.VarChar, responsavel.ds_email);
@@ -50,13 +64,13 @@ export async function editarDadosResponsavel() {
 
     const comando = `
         UPDATE tb_responsavel
-        SET id_reponsavel = @id_resposanvel,
-        id_empresa = @id,
+        SET
         nm_nome = @nome,
         ds_cargo = @cargo,
         ds_email = @email,
         ds_telefone = @telefone,
-        tp_role = @role;
+        tp_role = @role
+        where id_responsavel = @id;
     `
 
     let resp = await request.query(comando);
