@@ -106,16 +106,12 @@ export async function addFotoMatriz(foto, id) {
 export async function enviarAcordo(acordo, id) {
     let request = await con.request();
 
-    let situacao = 'Assinado';
-
     request.input('id', sql.Int, id);
-    request.input('acordo', sql.VarChar, acordo); +
-        request.input('situacao', sql.VarChar, situacao);
+    request.input('acordo', sql.VarChar, acordo);
 
     const comando = `
         update tb_empresa
-        set ds_acordo = @acordo,
-        ds_situacao = @situacao
+        set ds_acordo = @acordo
         where id_empresa = @id;
     `;
 
@@ -188,4 +184,36 @@ export async function BuscarSituacaoEmpresa(id) {
     let resp = await request.query(comando);
 
     return resp.recordset;
+};
+
+export async function buscarAcordoEmpresa(id) {
+    let request = await con.request();
+
+    request.input('id', sql.VarChar, id);
+
+    const comando = `
+        select ds_acordo 
+        from tb_empresa
+        where id_empresa = @id;
+    `;
+
+    let resp = await request.query(comando);
+
+    return resp.recordset[0];
+};
+
+export async function buscarFotoMatriz(id) {
+    let request = await con.request();
+
+    request.input('id', sql.Int, id);
+
+    const comando = `
+        SELECT ds_foto
+        FROM tb_empresa
+        WHERE id_empresa = @id;
+    `;
+
+    let resp = await request.query(comando);
+
+    return resp.recordset[0]; 
 }

@@ -2,15 +2,13 @@ import { Router } from "express";
 import { buscarResponsavel, buscarResponsavelPorId, cadastrarResponsavel, DeletarResponsavel, editarDadosResponsavel } from "../repository/responsavelRepository.js";
 import ValidarResponsavel from "../validation/responsavelValidation.js";
 import { autenticar } from "../utils/jwt.js";
-import { BuscarEmpresaPeloLogin } from "../repository/matrizRepository.js";
+import { BuscarEmpresaPeloLogin, buscarEmpresaPorId } from "../repository/matrizRepository.js";
 
 const endpoints = Router();
 
 endpoints.post("/resp", autenticar, async (req, resp) => {
     try {
         ValidarResponsavel(req);
-        const tipo = req.user.tipo;
-
         let dados = req.body;
 
         const id_login = req.user.id;
@@ -23,6 +21,10 @@ endpoints.post("/resp", autenticar, async (req, resp) => {
         })
 
     } catch (err) {
+        if (err.message.includes('id_empresa')) {
+            resp.status(400).send({ erro: 'Você deve cadastrar a empresa primeiro.' });
+        }
+
         resp.status(400).send({
             erro: err.message
         });
@@ -95,5 +97,7 @@ endpoints.delete('/resp/:id', autenticar, async (req, resp) => {
         });
     }
 });
+
+
 
 export default endpoints;

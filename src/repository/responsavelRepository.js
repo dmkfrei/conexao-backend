@@ -28,7 +28,7 @@ export async function buscarResponsavel(id) {
     request.input('id', sql.Int, id);
 
     const comando = `
-        select id_responsavel, nm_nome, ds_cargo, ds_email, ds_telefone 
+        select id_responsavel, nm_nome, ds_cargo, ds_email, tp_role, ds_telefone
         from tb_responsavel
         where id_empresa = @id;
     `;
@@ -43,7 +43,7 @@ export async function buscarResponsavelPorId(id) {
     request.input('id', sql.Int, id);
 
     const comando = `
-        select nm_nome, ds_cargo, ds_email, ds_telefone 
+        select nm_nome, ds_cargo, ds_email, ds_telefone, tp_role
         from tb_responsavel
         where id_responsavel = @id;
     `;
@@ -91,4 +91,4 @@ export async function DeletarResponsavel(id) {
     let resp = await request.query(comando);
 
     return resp.rowsAffected[0];
-}
+};

@@ -1,6 +1,6 @@
-import { Login } from "../repository/loginAdmRepository.js";
+import { BuscarInfos, Login } from "../repository/loginAdmRepository.js";
 import { Router } from 'express';
-import { gerarToken } from "../utils/jwt.js";
+import { autenticar, gerarToken } from "../utils/jwt.js";
 import ValidarLoginAdm from "../validation/loginAdmValidation.js";
 
 const endpoints = Router();
@@ -25,12 +25,12 @@ endpoints.post('/loginAdm', async (req, resp) => {
                 tipo: 'adm'
             })
         })
-        
+
     } catch (err) {
         resp.status(404).send({
             erro: err.message
         })
     }
-})
+});
 
 export default endpoints;

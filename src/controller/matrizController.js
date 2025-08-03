@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addFotoMatriz, alterarSituacao, buscarEmpresaPorId, buscarEmpresa, BuscarEmpresaPeloLogin, cadastrarMatriz, editarMatriz, enviarAcordo, BuscarSituacaoEmpresa } from "../repository/matrizRepository.js";
+import { addFotoMatriz, alterarSituacao, buscarEmpresaPorId, buscarEmpresa, BuscarEmpresaPeloLogin, cadastrarMatriz, editarMatriz, enviarAcordo, BuscarSituacaoEmpresa, buscarAcordoEmpresa, buscarFotoMatriz } from "../repository/matrizRepository.js";
 import validarMatriz from "../validation/matrizValidation.js";
 import storage from "../repository/multer.js";
 import multer from "multer";
@@ -21,9 +21,11 @@ endpoints.post("/matriz", autenticar, async (req, resp) => {
         });
 
     } catch (err) {
-        resp.status(400).send({
-            erro: err.message
-        })
+        if (err.message.includes('UQ__tb_empre__174390E86DE8873B')) {
+            return resp.status(400).send({ erro: 'Este CNPJ já está cadastrado.' });
+        }
+
+        return resp.status(400).send({ erro: err.message });
     }
 });
 
@@ -49,7 +51,7 @@ endpoints.put("/matriz/:id", autenticar, async (req, resp) => {
     }
 });
 
-endpoints.put("/alterarSituacao/:id", async (req, resp) => {
+endpoints.put("/alterarSituacao/:id", autenticar, async (req, resp) => {
     try {
         let id = req.params.id;
         let dados = req.body;
@@ -91,13 +93,14 @@ endpoints.get('/buscarSituacao', autenticar, async (req, resp) => {
     }
 });
 
-
-endpoints.put('/addFotoMatriz/:id', autenticar, m.single('img'), async (req, resp) => {
+endpoints.put('/addFotoMatriz', autenticar, m.single('img'), async (req, resp) => {
     try {
-        let id = req.params.id;
+        let id = req.user.id;
+
+        let id_empresa = await BuscarEmpresaPeloLogin(id);
         let filename = req.file.filename;
 
-        let x = await addFotoMatriz(filename, id);
+        let x = await addFotoMatriz(filename, id_empresa);
 
         resp.send(x);
 
@@ -121,14 +124,16 @@ endpoints.get('/baixarAcordo/', autenticar, async (req, resp) => {
     }
 });
 
-endpoints.put('/enviarAcordo/:id', autenticar, m.single('img'), async (req, resp) => {
+endpoints.put('/enviarAcordo', autenticar, m.single('img'), async (req, resp) => {
     try {
-        let id = req.params.id;
-        let filename = req.file.filename;
+        const id_login = req.user.id;
+        const id_empresa = await BuscarEmpresaPeloLogin(id_login);
 
-        let x = await enviarAcordo(filename, id);
+        const filename = req.file.filename;
 
-        resp.send(x);
+        const resultado = await enviarAcordo(filename, id_empresa);
+
+        resp.send(resultado);
 
     } catch (err) {
         resp.status(400).send({
@@ -149,7 +154,6 @@ endpoints.get('/buscarEmpresaPeloLogin', autenticar, async (req, resp) => {
         });
     }
 });
-
 
 endpoints.get('/buscarEmpresa', autenticar, async (req, resp) => {
     try {
@@ -176,7 +180,36 @@ endpoints.get('/buscarEmpresaPorId/:id', async (req, resp) => {
             erro: err.message
         });
     }
-})
+});
 
+endpoints.get('/buscarAcordo/:id', autenticar, async (req, resp) => {
+    try {
+        const id = req.params.id;
+        const file = await buscarAcordoEmpresa(id);
 
+        const img = file.ds_acordo;
+
+        resp.send({ img: img });
+
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        });
+    }
+});
+
+endpoints.get('/buscarFotoMatriz', autenticar, async (req, resp) => {
+    try {
+        const id_login = req.user.id;
+
+        const id_empresa = await BuscarEmpresaPeloLogin(id_login);
+        const resultado = await buscarFotoMatriz(id_empresa);
+
+        const foto = resultado?.ds_foto;
+
+        resp.send({ foto });
+    } catch (err) {
+        resp.status(400).send({ erro: err.message });
+    }
+});
 export default endpoints;

@@ -11,7 +11,7 @@ const m = multer({ storage });
 
 endpoints.post("/filial", autenticar, async (req, resp) => {
     try {
-        validarFilial(req); 
+        validarFilial(req);
 
         const id_login = req.user.id;
 
@@ -24,6 +24,12 @@ endpoints.post("/filial", autenticar, async (req, resp) => {
         })
 
     } catch (err) {
+        if (err.message.includes('UQ__tb_empre__174390E86DE8873B')) {
+            return resp.status(400).send({ erro: 'Este CNPJ já está cadastrado.' });
+        }
+        if (err.message.includes('id_empresa')) {
+            resp.status(400).send({ erro: 'Você deve cadastrar a empresa primeiro.' });
+        }
         resp.status(400).send({
             erro: err.message
         });
@@ -74,12 +80,12 @@ endpoints.get("/filial", autenticar, async (req, resp) => {
             const id_empresa = await BuscarEmpresaPeloLogin(id_login);
 
             const infos = await listarFilial(id_empresa);
-            resp.send({ tipo, dados: infos });
+            resp.send({ dados: infos });
 
         } else {
             const id_empresa = req.query.id_empresa;
             const infos = await listarFilial(id_empresa);
-            resp.send({ tipo, dados: infos });
+            resp.send({ dados: infos });
         }
     } catch (err) {
         resp.status(400).send({ erro: err.message });
