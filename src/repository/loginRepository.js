@@ -189,20 +189,3 @@ export async function atualizarSenha(novaSenha, id) {
     let resp = await request.query(comando);
     return resp.rowsAffected[0];
 }
-
-export async function verificarCadastroEmpresa(id) {
-    let request = await con.request();
-
-    request.input('id', sql.Int, id);
-
-    const comando = `
-        SELECT e.id_empresa
-            FROM tb_empresa e
-            JOIN tb_login l ON e.id_login = l.id_login
-        WHERE l.id_login = @id;
-    `;
-
-    let resp = await request.query(comando);
-
-    return resp.rowsAffected;
-}

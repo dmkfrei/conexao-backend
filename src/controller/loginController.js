@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { cadastrar, atualizarLogin, login, buscarSenhaAntiga, buscarInfosLogin, buscarLoginPorEmailResponsavel, gerarCodigo, verificarCodigo, atualizarSenha, verificarCadastroEmpresa } from "../repository/loginRepository.js";
+import { cadastrar, atualizarLogin, login, buscarSenhaAntiga, buscarInfosLogin, buscarLoginPorEmailResponsavel, gerarCodigo, verificarCodigo, atualizarSenha } from "../repository/loginRepository.js";
 import ValidarLogin from "../validation/loginValidation.js";
 import { autenticar, gerarToken } from "../utils/jwt.js";
 import storage from "../repository/multer.js";
@@ -156,22 +156,6 @@ endpoints.put('/changePassword/:id', async (req, resp) => {
         }
 
         resp.send({ mensagem: 'Senha atualizada com sucesso.' });
-    } catch (err) {
-        resp.status(500).send({ erro: err.message });
-    }
-});
-
-endpoints.get('/verificarCadastro', autenticar, async (req, resp) => {
-    try {
-        let id = req.user.id;
-        let empresa = await verificarCadastroEmpresa(id);
-        
-        if (empresa > 0) {
-            resp.send({ cadastrada: true });
-        } else {
-            resp.send({ cadastrada: false });
-        }
-
     } catch (err) {
         resp.status(500).send({ erro: err.message });
     }
