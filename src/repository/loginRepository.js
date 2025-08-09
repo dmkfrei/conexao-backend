@@ -144,7 +144,11 @@ export async function gerarCodigo(email) {
         WHERE r.ds_email = @email;
     `;
 
-    await request.query(comando);
+    const result = await request.query(comando);
+
+    if (result.rowsAffected[0] === 0) {
+        throw new Error('O email deve ser o mesmo do funcionário.');
+    }
 
     return codigo;
 }
